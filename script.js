@@ -1,31 +1,74 @@
-// Mobile Navigation
+// Mobile Menu Toggle
+const menuToggle = document.createElement('div');
+menuToggle.className = 'menu-toggle';
+menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+document.querySelector('nav').appendChild(menuToggle);
+
 const navLinks = document.querySelector('.nav-links');
 
-hamburger.addEventListener('click', () => {
+menuToggle.addEventListener('click', () => {
     navLinks.classList.toggle('active');
+    menuToggle.classList.toggle('active');
 });
 
-// Close mobile menu when clicking outside
+// Close menu when clicking outside
 document.addEventListener('click', (e) => {
+    if (!e.target.closest('nav')) {
+        navLinks.classList.remove('active');
+        menuToggle.classList.remove('active');
+    }
 });
 
-// Smooth Scrolling for all links
+// Scroll Animation
+const animateOnScroll = () => {
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    
+    elements.forEach(element => {
+        const elementTop = element.getBoundingClientRect().top;
+        const elementBottom = element.getBoundingClientRect().bottom;
+        
+        if (elementTop < window.innerHeight && elementBottom > 0) {
+            element.classList.add('visible');
+        }
+    });
+};
+
+// Initial check for elements in view
+window.addEventListener('load', animateOnScroll);
+
+// Check for elements in view on scroll
+window.addEventListener('scroll', animateOnScroll);
+
+// Smooth scroll for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        
-        // Close mobile menu if open
-        navLinks.classList.remove('active');
-        
-        const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
-        
-        if (targetElement) {
-            window.scrollTo({
-                top: targetElement.offsetTop - 80, // Adjust for header height
-                behavior: 'smooth'
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
+            // Close mobile menu after clicking
+            navLinks.classList.remove('active');
+            menuToggle.classList.remove('active');
         }
+    });
+});
+
+// Video Background Handling
+const videoBackgrounds = document.querySelectorAll('.video-background video');
+
+videoBackgrounds.forEach(video => {
+    // Ensure video plays on mobile
+    video.setAttribute('playsinline', '');
+    video.setAttribute('muted', '');
+    
+    // Handle video loading
+    video.addEventListener('loadeddata', () => {
+        video.play().catch(error => {
+            console.log('Video autoplay failed:', error);
+        });
     });
 });
 
